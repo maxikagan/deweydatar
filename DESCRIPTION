@@ -1,0 +1,15 @@
+Package: deweyr
+Type: Package
+Title: Dewey Data Inc. R Library
+Version: 0.1.0
+Author: Dewey
+Maintainer: Investments Tech <info@InvestmentsTech.com>
+Description: Helper package for Dewey Data.
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Depends:
+  httr2
+
