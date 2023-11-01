@@ -2,8 +2,8 @@ Package: deweyr
 Type: Package
 Title: Dewey Data Inc. R Library
 Version: 0.1.0
-Author: Dewey
-Maintainer: Investments Tech <info@InvestmentsTech.com>
+Author: Dewey Data Inc.
+Maintainer: Dewey Data Inc. <info@deweydata.io>
 Description: Helper package for Dewey Data.
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
