@@ -1,5 +1,4 @@
 # deweydatayr
-Dewey Data Inc. R API
 
 **Helper for Dewey Data.**
 
