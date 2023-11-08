@@ -1,4 +1,4 @@
-#' deweyr: An R package for Dewey Data Inc.
+#' deweydatar: An R package for Dewey Data Inc.
 #'
 #' This package includes helper functions for Dewey Data.
 #'
