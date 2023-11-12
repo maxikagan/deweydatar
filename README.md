@@ -2,6 +2,5 @@
 
 **Helper for Dewey Data.**
 
-R API for Dewey Data Inc. Currently supports file download functions.
+R API for Dewey Data Inc. Currently supports file download and utility functions.
 
-11/7/2023
