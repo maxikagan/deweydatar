@@ -1,12 +1,13 @@
 Package: deweydatar
 Type: Package
 Title: Dewey Data Inc. R Library
-Version: 0.1.0
+Version: 0.1.1
 Author: Dewey Data Inc.
 Maintainer: Dewey Data Inc. <info@deweydata.io>
 Description: Helper package for Dewey Data.
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+    This is a beta version.
+BugReports: https://community.deweydata.io/c/help/r/44
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
