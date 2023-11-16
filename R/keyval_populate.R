@@ -7,27 +7,27 @@ json_to_df1 = function(x, keys=NULL, asis=F) {
   ret_val = NULL;
 
   if(asis) {
-    ret_val = data.frame(fromJSON(x))
+    ret_val = unlist(fromJSON(x))
   } else {
     tryCatch(
       {
-        ret_val = data.frame(fromJSON(x))
+        ret_val = unlist(fromJSON(x))
         if(!is.null(keys)) {
-          cols1 = colnames(ret_val)
-          # cols1 selected by keys
-          selected = cols1 %in% keys
+          names1 = names(ret_val)
+          # names1 selected by keys
+          selected = names1 %in% keys
           # selected by keys
-          ret_val = ret_val[, cols1[selected]]
+          ret_val = ret_val[names1[selected]]
 
-          # not in cols1
-          not_exist = !(keys %in% cols1)
+          # not in names1
+          not_exist = !(keys %in% names1)
           # Set to NA
           if(sum(not_exist) >0) {
-            ret_val[, keys[not_exist]] = NA
+            ret_val[keys[not_exist]] = NA
           }
 
           # select in keys order
-          ret_val= ret_val[, keys]
+          ret_val= ret_val[keys]
         }
       },
       error = function(e) {
@@ -48,8 +48,8 @@ json_to_df1 = function(x, keys=NULL, asis=F) {
         message("If you want to force out NA data.frame, provide keys.")
         stop("Parsing stopped.")
       } else {
-        ret_val = data.frame(matrix(ncol = length(keys), nrow = 1, NA))
-        colnames(ret_val) = keys
+        ret_val = rep(NA, length(keys))
+        names(ret_val) = keys
       }
     }
   }
