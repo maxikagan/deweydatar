@@ -68,6 +68,28 @@ to_json_pass_by = function(x) {
   return (x)
 }
 
+# to_json_resimplifi_meta = function(x) {
+#   regex_key_resimplifi = "\'[A-Za-z0-9_-]+\':"
+#
+#   # x = sample_data$IMAGES
+#   if(substr(x[1], 1, 1) == "[" & substr(x[1], nchar(x[1]), nchar(x[1])) == "]") {
+#     message("This data is nested. Cannot be converted to a data.frame.")
+#     return (NULL)
+#   } else {
+#     # x = sample_data$META
+#     key_desc_loc = gregexpr("\'description\':", x)
+#     key_desc_loc_df = data.frame(
+#       start = unlist(key_desc_loc),
+#       len = unlist(lapply(key_desc_loc, attributes))
+#       )
+#
+#     # Separate out description
+#
+#   }
+#
+#   return(x)
+# }
+
 #' @title
 #' Convert JSON data rows to data.frame
 #' @description
@@ -83,6 +105,7 @@ to_json_pass_by = function(x) {
 #' @references
 #' None
 #' @seealso
+#' None
 #' @examples
 #' # not run
 #' aa = keyval_to_df(sample_data$POPULARITY_BY_DAY,
