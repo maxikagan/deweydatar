@@ -38,13 +38,13 @@ download_files(files_df, "C:/Temp")
 
 `deweydatar` package has the following functions:
 
-- `get_file_list`: gets the list of files in a `data.frame`
-- `read_sample_data`: read a sample of data for a file download URL
-- `read_sample_data0`: read a sample of data for the first file with apikey and product path
-- `read_local_data`: read data from locally saved csv.gz file
-- `download_files`: download files from the file list to a destination folder
-- `download_files0`: download files with apikey and product path to a destination folder
-- `slice_files_df`: slice a files_df (retrieved by `get_file_list`) by date range
+* `get_file_list`: gets the list of files in a `data.frame`
+* `read_sample_data`: read a sample of data for a file download URL
+* `read_sample_data0`: read a sample of data for the first file with apikey and product path
+* `read_local_data`: read data from locally saved csv.gz file
+* `download_files`: download files from the file list to a destination folder
+* `download_files0`: download files with apikey and product path to a destination folder
+* `slice_files_df`: slice a files_df (retrieved by `get_file_list`) by date range
 
 ### 4. Examples
 I am going to use Advan weekly pattern as an example.
@@ -65,7 +65,7 @@ files_df
 
 `print_info = TRUE` set to print the meta information of the files like below:
 
-<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/b62c5f2a-bf4b-47f5-a77b-6a7683c09f42" width="800">
+<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/b62c5f2a-bf4b-47f5-a77b-6a7683c09f42" width="600">
 
 Advan weekly pattern data has a total of 8848 files over 9 pages, a total of 1.8TB, and 206.81MB average file sizes.
 
@@ -83,17 +83,18 @@ files_df includes a file list (`data.frame`) like below:
 
 <img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/51315da3-ba77-4988-846a-53b28fd52da3" width="800">
 <!--![image](https://github.com/Dewey-Data/deweydatar/assets/142400584/51315da3-ba77-4988-846a-53b28fd52da3) -->
-<br> <br>
+<br><br>
 The data.frame has
-- `index`: file index ranges from 1 to the number of files
-- `page`: page of the file
-- `link`: file download link
-- `partition_key`: to subselect files based on dates
-- `file_name`
-- `file_extension`
-- `file_size_bytes`
-- `modified_at`
-- `download_link`: as the 'link' (download_link is left there to be consistent with the v2 tutorial).
+
+* `index`: file index ranges from 1 to the number of files
+* `page`: page of the file
+* `link`: file download link
+* `partition_key`: to subselect files based on dates
+* `file_name`
+* `file_extension`
+* `file_size_bytes`
+* `modified_at`
+* `download_link`: sameas the `link` (`download_link` is left there to be consistent with the v2 tutorial).
 
 You can quickly load/see a sample data by
 ```R
@@ -112,7 +113,7 @@ Now it’s time to download data to your local drive. First, you can download al
 ```R
 download_files0(apikey_, product_path_, "E:/temp", "advan_wp_")
 ```
-The third parameter is for your destination folder (`E:/temp`), and the last parameter (`advan_wp_`) is the filename prefix. So, all the files will be saved as “advan_wp_xxxxxxx.csv.gz”, etc. You can leave this empty or NULL not to have a prefix.
+The third parameter is for your destination folder (`E:/temp`), and the last parameter (`advan_wp_`) is the filename prefix. So, all the files will be saved as `advan_wp_xxxxxxx.csv.gz`, etc. You can leave this empty or NULL not to have a prefix.
 
 The second approach to download files is to pass `files_df`:
 ```R
@@ -120,7 +121,7 @@ download_files(files_df, "E:/temp", "advan_wp_")
 ```
 This will show the progress of your file download like below:
 
-<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/ddf9c8e4-d6ca-4be4-aa8c-838e740fedf8" width="800">
+<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/ddf9c8e4-d6ca-4be4-aa8c-838e740fedf8" width="600">
 <!--![image](https://github.com/Dewey-Data/deweydatar/assets/142400584/ddf9c8e4-d6ca-4be4-aa8c-838e740fedf8)-->
 
 If some of the files are already downloaded and if you want to skip downloading them, set 
