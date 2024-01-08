@@ -1,4 +1,5 @@
 # deweydatayr
+This _**R**_ package contains Dewey Data download funtionalities and other utilities.
 
 **Helper for Dewey Data.**
 
