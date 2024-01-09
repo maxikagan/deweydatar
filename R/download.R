@@ -21,6 +21,10 @@ make_api_endpoint = function(path) {
 #' @param product_path (character) API endpoint or Product ID.
 #' @param start_page (integer) Start page of file list. Default is 1.
 #' @param end_page (integer) End page of file list. Default is Inf.
+#' @param partition_key_after (character) Start date character for files in the form of "20021-07-01".
+#' Default is NA ("1000-01-01"), which indicates no limit.
+#' @param partition_key_before (character) End date character for files in the form of "2023-08-21".
+#' Default is NA ("9999-12-31"), which indicates no limit.
 #' @param print_info (logical) Print file list information. Default is TRUE.
 #' @details
 #' None
@@ -45,18 +49,28 @@ make_api_endpoint = function(path) {
 #' @export
 get_file_list = function(apikey, product_path,
                          start_page = 1, end_page = Inf,
+                         partition_key_after = NA, partition_key_before = NA,
                          print_info = T) {
   product_path = make_api_endpoint(product_path)
   data_meta = NULL
   page_meta = NULL
   files_df = NULL
 
+  if(is.na(partition_key_after)) {
+    partition_key_after = "1000-01-01"
+  }
+  if(is.na(partition_key_before)) {
+    partition_key_before = "9999-12-31"
+  }
+
   page = start_page
   while(T) {
     req = request(product_path) %>%
       req_headers("X-API-KEY" = apikey) %>%
       req_headers("accept" = "application/json") %>%
-      req_url_query ("page" = page)
+      req_url_query ("page" = page) %>%
+      req_url_query ("partition_key_after" = partition_key_after) %>%
+      req_url_query ("partition_key_before" = partition_key_before)
 
     response = tryCatch(
       {

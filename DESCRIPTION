@@ -1,7 +1,7 @@
 Package: deweydatar
 Type: Package
 Title: Dewey Data Inc. R Library
-Version: 0.1.4
+Version: 0.1.5
 Author: Dewey Data Inc.
 Maintainer: Dewey Data Inc. <info@deweydata.io>
 Description: Helper package for Dewey Data.

@@ -9,6 +9,8 @@ get_file_list(
   product_path,
   start_page = 1,
   end_page = Inf,
+  partition_key_after = NA,
+  partition_key_before = NA,
   print_info = T
 )
 }
@@ -20,6 +22,12 @@ get_file_list(
 \item{start_page}{(integer) Start page of file list. Default is 1.}
 
 \item{end_page}{(integer) End page of file list. Default is Inf.}
+
+\item{partition_key_after}{(character) Start date character for files in the form of "20021-07-01".
+Default is NA ("1000-01-01"), which indicates no limit.}
+
+\item{partition_key_before}{(character) End date character for files in the form of "2023-08-21".
+Default is NA ("9999-12-31"), which indicates no limit.}
 
 \item{print_info}{(logical) Print file list information. Default is TRUE.}
 }
