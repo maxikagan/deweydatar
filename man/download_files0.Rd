@@ -8,8 +8,10 @@ download_files0(
   apikey,
   product_path,
   dest_folder,
+  start_date = NULL,
+  end_date = NULL,
   filename_prefix = NULL,
-  skip_exists = TRUE
+  skip_exists = FALSE
 )
 }
 \arguments{
@@ -19,9 +21,15 @@ download_files0(
 
 \item{dest_folder}{(character) Destination local folder to save files.}
 
+\item{start_date}{(character) Data start date character for files in the form of "2021-07-01".
+Default is NULL ("1000-01-01"), which indicates no limit.}
+
+\item{end_date}{(character) Data end date character for files in the form of "2023-08-21".
+Default is NULL ("9999-12-31"), which indicates no limit.}
+
 \item{filename_prefix}{(character) Prefix for file names.}
 
-\item{skip_exists}{(boolean) Skips downloading if the file}
+\item{skip_exists}{(boolean) Skips downloading if the file exists. Default is FALSE.}
 }
 \value{
 None.
