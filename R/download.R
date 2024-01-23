@@ -398,7 +398,7 @@ download_files = function(files_df, dest_folder,
 
     dest_path = paste0(dest_folder, file_name)
     if (file.exists(dest_path) && skip_exists) {
-      print(paste0("File ", dest_path, " already exists. Skipping..."))
+      message(paste0("File ", dest_path, " already exists. Skipping..."))
       next
     }
 
