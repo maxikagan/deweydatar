@@ -2,7 +2,7 @@
 **_R_** API for Dewey Data Inc. Currently supports file download and utility functions.
 
 Find the release notes here: [Release Notes](https://github.com/Dewey-Data/deweydatar/blob/main/Release%20notes.md).
-
+Bug report: https://community.deweydata.io/c/help/r/44.
 Explore data at https://www.deweydata.io/.
 
 # API tutorial
