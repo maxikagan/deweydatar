@@ -13,6 +13,100 @@ make_api_endpoint = function(path) {
   }
 }
 
+#' @title Get metadata from server
+#' @description
+#' Get metadata from server
+#' @param apikey (character) API Key.
+#' @param product_path (character) API endpoint or Product ID.
+#' @param print_meta (logical) Print metadata. Default is TRUE.
+#' @details
+#' None
+#' @return A data.frame object contains metadata.
+#'  \item{total_files}{total number of files.}
+#'  \item{total_size_MB}{total size of files in MB.}
+#'  \item{partition_column}{data partition column name.}
+#'  \item{partition_aggregation}{aggregation frequency.}
+#'  \item{min_partition_key}{min date available.}
+#'  \item{max_partition_key}{max date available.}
+#' @author Dewey Data Inc.
+#' @references
+#' None
+#' @examples
+#' # not run
+#' meta_df = get_meta(apikey_, product_path_, print_meta = TRUE)
+#'
+#' @export
+get_meta = function(apikey, product_path, print_meta = TRUE) {
+  product_path = make_api_endpoint(product_path)
+  req = request(paste0(product_path,"/metadata")) %>%
+    req_headers("X-API-KEY" = apikey) %>%
+    req_headers("accept" = "application/json")
+
+  response = tryCatch(
+    {
+      req_perform(req)
+    }, warning = function(cond) {
+      message("Warning during httr2::req_perform.")
+      message(cond)
+      message("")
+    }, error = function(cond) {
+      message("Error during httr2::req_perform.")
+      message(cond)
+      message("")
+    }
+  )
+
+  if(is.null(response)) {
+    return(NULL)
+  } else if(response$status_code == 401) {
+    print(response);
+    return(NULL);
+  }
+
+  # resp_content_type(response)
+  # resp_status_desc(response)
+
+  res_json = resp_body_json(response)
+
+  if(!('total_files' %in% names(res_json))) {
+    print("Error in response.json")
+    print(res_json)
+    print(" ")
+
+    return(NULL)
+  }
+
+  # Convert res_json list to a data.frame
+  meta = data.frame(t(unlist(res_json)))
+
+  # total_files as numeric
+  meta$total_files = as.numeric(meta$total_files)
+  # total_size as numeric
+  meta$total_size = as.numeric(meta$total_size)
+
+  # total_size is in megabytes
+  meta$total_size = meta$total_size/1000000
+
+  # change column name to total_size_GB
+  colnames(meta)[colnames(meta) == "total_size"] = "total_size_MB"
+
+  if(print_meta == TRUE) {
+    message(" ")
+    message("Metadata summary ------------------------------------------------")
+    message(paste0("Total number of files: ", format(meta$total_files, big.mark = ",")))
+    message(paste0("Total files size (MB): ", format(round(meta$total_size_MB, digits = 2), big.mark = ",")))
+    message(paste0("Date aggregation: ", meta$partition_aggregation))
+    message(paste0("Date partition column: ", meta$partition_column))
+    message(paste0("Data min available date: ", meta$min_partition_key))
+    message(paste0("Data max available date: ", meta$max_partition_key))
+    message("-----------------------------------------------------------------")
+    message(" ")
+  }
+
+  return(meta)
+}
+
+
 #' @title
 #' Collects file list from server
 #' @description
@@ -21,10 +115,10 @@ make_api_endpoint = function(path) {
 #' @param product_path (character) API endpoint or Product ID.
 #' @param start_page (integer) Start page of file list. Default is 1.
 #' @param end_page (integer) End page of file list. Default is Inf.
-#' @param partition_key_after (character) Start date character for files in the form of "20021-07-01".
-#' Default is NA ("1000-01-01"), which indicates no limit.
-#' @param partition_key_before (character) End date character for files in the form of "2023-08-21".
-#' Default is NA ("9999-12-31"), which indicates no limit.
+#' @param start_date (character) Data start date character for files in the form of "2021-07-01".
+#' Default is NULL ("1000-01-01"), which indicates no limit.
+#' @param end_date (character) Data end date character for files in the form of "2023-08-21".
+#' Default is NULL ("9999-12-31"), which indicates no limit.
 #' @param print_info (logical) Print file list information. Default is TRUE.
 #' @details
 #' None
@@ -49,28 +143,41 @@ make_api_endpoint = function(path) {
 #' @export
 get_file_list = function(apikey, product_path,
                          start_page = 1, end_page = Inf,
-                         partition_key_after = NA, partition_key_before = NA,
+                         start_date = NULL, end_date = NULL,
                          print_info = T) {
   product_path = make_api_endpoint(product_path)
+  meta = get_meta(apikey, product_path, print_meta = F)
   data_meta = NULL
   page_meta = NULL
   files_df = NULL
 
-  if(is.na(partition_key_after)) {
-    partition_key_after = "1000-01-01"
+  if(is.null(start_date)) {
+    start_date = "1000-01-01"
   }
-  if(is.na(partition_key_before)) {
-    partition_key_before = "9999-12-31"
+  if(is.null(end_date)) {
+    end_date = "9999-12-31"
   }
+
+  # To proper date format: for example '2023-3-4' to '2023-03-04'
+  start_date = as.character(as.Date(start_date))
+  end_date = as.character(as.Date(end_date))
+
+  # print(start_date)
+  # print(end_date)
 
   page = start_page
   while(T) {
     req = request(product_path) %>%
       req_headers("X-API-KEY" = apikey) %>%
       req_headers("accept" = "application/json") %>%
-      req_url_query ("page" = page) %>%
-      req_url_query ("partition_key_after" = partition_key_after) %>%
-      req_url_query ("partition_key_before" = partition_key_before)
+      req_url_query ("page" = page)
+
+    # Only datasets with partition column
+    if(!is.null(meta$partition_column)) {
+      req = req %>%
+      req_url_query ("partition_key_after" = start_date) %>%
+      req_url_query ("partition_key_before" = end_date)
+    }
 
     response = tryCatch(
       {
@@ -100,10 +207,11 @@ get_file_list = function(apikey, product_path,
 
     # initialize
     if(res_json$page == start_page) {
+      # Convert res_json list to a data.frame
       data_meta = data.frame(
         total_files = res_json$total_files,
         total_pages = res_json$total_pages,
-        total_size = res_json$total_size/1000000,
+        total_size_MB = res_json$total_size/1000000,
         expires_at = res_json$expires_at
         )
 
@@ -159,11 +267,11 @@ get_file_list = function(apikey, product_path,
   if(print_info == T) {
     message(" ")
     message("Files information summary ---------------------------------------")
-    message(paste0("Total number of pages: ", data_meta$total_pages))
-    message(paste0("Total number of files: ", data_meta$total_files))
-    message(paste0("Total files size (MB): ", round(data_meta$total_size, digits = 2)))
+    message(paste0("Total number of pages: ", format(data_meta$total_pages, big.mark = ",")))
+    message(paste0("Total number of files: ", format(data_meta$total_files, big.mark = ",")))
+    message(paste0("Total files size (MB): ", format(round(data_meta$total_size_MB, digits = 2), big.mark = ",")))
     message(paste0("Average single file size (MB): ",
-                   round(mean(page_meta$avg_file_size_for_page), digits = 2)))
+                   format(round(mean(page_meta$avg_file_size_for_page), digits = 2), big.mark = ",")))
     message(paste0("Date partition column: ", page_meta$partition_column[1]))
     message(paste0("Expires at: ", data_meta$expires_at))
     message("-----------------------------------------------------------------")
@@ -191,10 +299,10 @@ get_file_list = function(apikey, product_path,
 #' \code{\link{get_file_list}}, \code{\link{read_sample_data0}}
 #' @examples
 #' # not run
-#' sample_data = read_sample_data(files_df$link[1], nrows = 100)
+#' sample_data = read_sample(files_df$link[1], nrows = 100)
 #'
 #' @export
-read_sample_data = function(url, nrows = 100) {
+read_sample = function(url, nrows = 100) {
   # if(nrows > 1000) {
   #   message("Warning: set nrows no greater than 1000.");
   #   nrows = 1000;
@@ -205,6 +313,10 @@ read_sample_data = function(url, nrows = 100) {
 
   return(df);
 }
+
+# Backward compatibility
+#' @export
+read_sample_data = read_sample
 
 #' @title
 #' Read sample data into memory from a URL
@@ -223,43 +335,23 @@ read_sample_data = function(url, nrows = 100) {
 #' \code{\link{get_file_list}}, \code{\link{read_sample_data}}
 #' @examples
 #' # not run
-#' sample_data0 = read_sample_data0(apikey_, pp_advan_wp, 100)
+#' sample_data0 = read_sample0(apikey_, pp_advan_wp, 100)
 #'
 #' @export
-read_sample_data0 = function(apikey, product_path, nrows = 100) {
+read_sample0 = function(apikey, product_path, nrows = 100) {
   files_df = get_file_list(apikey, product_path,
-                           start_page = 1, end_page =1, print_info = T);
+                           start_page = 1, end_page =1, print_info = F);
+  message("Sample data completed.");
   message("    ");
 
   if(!is.null(files_df) & (nrow(files_df) > 0)) {
-    return(read_sample_data(files_df$link[1], nrows));
+    return(read_sample(files_df$link[1], nrows));
   }
 }
 
-#' @title
-#' Read local data into memory from a path
-#' @description
-#' Read local data into memory from a path
-#' @param apikey (character) Path to a .csv.gz file.
-#' @param nrows (integer) Number of rows to read. Default is -1 (all).
-#' @details
-#' This can be slow. Recommend to use fread function at data.table package.
-#' @return A data.frame object contains data.
-#' @author Dewey Data Inc.
-#' @references
-#' None
-#' @seealso
-#' None
-#' @examples
-#' # not run
-#' sample_data = read_sample_data(files_df$link[1], nrows = 100)
-#'
+# Backward compatibility
 #' @export
-read_local_data = function(path, nrows = -1) {
-  df = read.csv(gzfile(path), nrows = nrows);
-
-  return(df);
-}
+read_sample_data0 = read_sample0
 
 #' @title
 #' Download files from file list to a destination folder
@@ -284,10 +376,11 @@ read_local_data = function(path, nrows = -1) {
 #' \code{\link{download_files0}}
 #' @examples
 #' # not run
-#' download_files(files_df, "C:/temp", "advan_wp_", skip_exists = TRUE)
+#' download_files(files_df, "C:/temp", "advan_wp_", skip_exists = FALSE)
 #'
 #' @export
-download_files = function(files_df, dest_folder, filename_prefix = NULL, skip_exists = TRUE) {
+download_files = function(files_df, dest_folder,
+                          filename_prefix = NULL, skip_exists = FALSE) {
   dest_folder = gsub("\\", "/", dest_folder, fixed = T);
 
   if(!endsWith(dest_folder, "/")) {
@@ -329,8 +422,12 @@ download_files = function(files_df, dest_folder, filename_prefix = NULL, skip_ex
 #' @param apikey (character) API Key.
 #' @param product_path (character) API endpoint or Product ID.
 #' @param dest_folder (character) Destination local folder to save files.
+#' @param start_date (character) Data start date character for files in the form of "2021-07-01".
+#' Default is NULL ("1000-01-01"), which indicates no limit.
+#' @param end_date (character) Data end date character for files in the form of "2023-08-21".
+#' Default is NULL ("9999-12-31"), which indicates no limit.
 #' @param filename_prefix (character) Prefix for file names.
-#' @param skip_exists (boolean) Skips downloading if the file
+#' @param skip_exists (boolean) Skips downloading if the file exists. Default is FALSE.
 #' @details
 #' The file links inside this function are valid for 24 hours.
 #' If download process passes the 24 hours period,
@@ -347,8 +444,13 @@ download_files = function(files_df, dest_folder, filename_prefix = NULL, skip_ex
 #'
 #' @export
 download_files0 = function(apikey, product_path, dest_folder,
-                           filename_prefix = NULL, skip_exists = TRUE) {
-  files_df = get_file_list(apikey, product_path, print_info = T);
+                           start_date = NULL, end_date = NULL,
+                           filename_prefix = NULL, skip_exists = FALSE) {
+  #files_df = get_file_list(apikey, product_path, print_info = T);
+  files_df = get_file_list(apikey = apikey, product_path = product_path,
+                           start_page = 1, end_page = Inf,
+                           start_date = start_date, end_date = end_date,
+                           print_info = T);
   message("   ");
 
   download_files(files_df, dest_folder, filename_prefix, skip_exists);
@@ -388,3 +490,44 @@ slice_files_df = function(files_df, start_date, end_date = NULL) {
                          (files_df$partition_key <= end_date), ]
   return (sliced_df)
 }
+
+#' @title
+#' Read local data into memory from a path
+#' @description
+#' Read local data into memory from a path
+#' @param apikey (character) Path to a .csv.gz file.
+#' @param nrows (integer) Number of rows to read. Default is -1 (all).
+#' @details
+#' This can be slow. Recommend to use \code{fread} function
+#' at \code{data.table} package.
+#' @return A data.frame object contains data.
+#' @author Dewey Data Inc.
+#' @references
+#' None
+#' @seealso
+#' None
+#' @examples
+#' # not run
+#' local_data = read_local(path, nrows = 100)
+#'
+#' @export
+read_local = function(path, nrows = -1) {
+  tryCatch({
+    df = read.csv(gzfile(path), nrows = nrows);
+  }, error = function(cond) {
+    tryCatch({
+      df = fread(path, nrows = nrows)
+    }, error = function(cond) {
+      message("File type not supported. Only zipped csv or csv files are supported.")
+    })
+    df = read.csv(path, nrows = nrows)
+  })
+  df = read.csv(gzfile(path), nrows = nrows);
+
+  return(df);
+}
+
+# Backward compatibility
+#' @export
+read_local_data = read_local
+

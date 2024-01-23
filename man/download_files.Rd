@@ -8,7 +8,7 @@ download_files(
   files_df,
   dest_folder,
   filename_prefix = NULL,
-  skip_exists = TRUE
+  skip_exists = FALSE
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ and \code{\link{get_file_list}} must be called again to collect new
 }
 \examples{
 # not run
-download_files(files_df, "C:/temp", "advan_wp_", skip_exists = TRUE)
+download_files(files_df, "C:/temp", "advan_wp_", skip_exists = FALSE)
 
 }
 \references{
