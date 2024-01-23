@@ -92,7 +92,11 @@ get_meta = function(apikey, product_path, print_meta = TRUE) {
 
   if(print_meta == TRUE) {
     message(" ")
+<<<<<<< HEAD
     message("Metadata summary ------------------------------------------------")
+=======
+    message("Metadata summary ---------------------------------------")
+>>>>>>> 803fed0ffa1ecaff6545ef6cf33150b00217c927
     message(paste0("Total number of files: ", format(meta$total_files, big.mark = ",")))
     message(paste0("Total files size (MB): ", format(round(meta$total_size_MB, digits = 2), big.mark = ",")))
     message(paste0("Date aggregation: ", meta$partition_aggregation))
