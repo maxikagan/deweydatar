@@ -67,7 +67,7 @@ files_df = get_file_list(apikey_, pp_advan_wp,
                          end_date = '2023-12-31',
                          print_info = T);
 ```
-If you do not specifiy `start_date`, it will download from the minium available date and do not spesify `end_date`, it will download to the maximum available date.
+If you do not specifiy `start_date`, it will collect all the files from the minimum available date, and do not spesify `end_date`, all the files to the maximum available date.
 
 `print_info = TRUE` set to print another meta information of the files like below:
 <img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/897355b5-cf9f-4369-9969-bfef44942f28" width = "600">
