@@ -342,7 +342,6 @@ read_sample_data = read_sample
 read_sample0 = function(apikey, product_path, nrows = 100) {
   files_df = get_file_list(apikey, product_path,
                            start_page = 1, end_page =1, print_info = F);
-  message("Sample data completed.");
   message("    ");
 
   if(!is.null(files_df) & (nrow(files_df) > 0)) {
@@ -398,7 +397,9 @@ download_files = function(files_df, dest_folder,
 
     dest_path = paste0(dest_folder, file_name)
     if (file.exists(dest_path) && skip_exists) {
-      message(paste0("File ", dest_path, " already exists. Skipping..."))
+      message(paste0("File already exists: ", dest_path))
+      message("Skipping...")
+
       next
     }
 
@@ -496,7 +497,7 @@ slice_files_df = function(files_df, start_date, end_date = NULL) {
 #' Read local data into memory from a path
 #' @description
 #' Read local data into memory from a path
-#' @param apikey (character) Path to a .csv.gz file.
+#' @param apikey (character) Path to a .csv.gz or csv file.
 #' @param nrows (integer) Number of rows to read. Default is -1 (all).
 #' @details
 #' This can be slow. Recommend to use \code{fread} function
