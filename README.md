@@ -11,14 +11,15 @@ Explore data at https://www.deweydata.io/.
 ### 1. Create API Key
 In the system, click Connections → Add Connection to create your API key.
 
-<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/8ba869f0-3356-439c-8288-8b8d4bb76326" width="800">
-<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/f479586b-ccf4-490b-852c-90051b1e7008" width="600">
+<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/8ba869f0-3356-439c-8288-8b8d4bb76326" width="600">
+<br>
+<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/f479586b-ccf4-490b-852c-90051b1e7008" width="400">
 
 As the message says, please make a copy of your API key and store it somewhere. Also, please hit the **Save** button before use.
 
 ### 2. Get a product path
 Choose your product and Get / Subscribe → Connect to API then you can get API endpoint (product path). Make a copy of it.
-<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/77000d10-3e36-42c8-be36-361e30e76017" width="800">
+<img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/aef19ae4-eccd-4b58-a7f7-77ed698e0584" width="600">
 
 ### 3. Install `deweydatar` library
 You can install this library directly from the GitHub source as following. It requires `devtools`.
@@ -42,8 +43,10 @@ library(deweydatar)
 * `read_local`: read data from locally saved csv.gz file
 
 ### 4. Examples
-I am going to use Advan weekly pattern as an example.
+I am going to use Advan Weekly Pattern as an example.
 ```R
+library(deweydatar)
+
 # API Key
 apikey_ = "Paste your API key from step 1 here."
 
@@ -70,6 +73,8 @@ files_df = get_file_list(apikey_, pp_advan_wp,
                          print_info = T);
 ```
 If you do not specifiy `start_date`, it will collect all the files from the minimum available date, and do not spesify `end_date`, all the files to the maximum available date.
+
+**Most Dewey datasets are very large. Please specify `start_date` and `end_date`.**
 
 `print_info = TRUE` set to print another meta information of the files like below:
 <img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/897355b5-cf9f-4369-9969-bfef44942f28" width = "600">
@@ -113,7 +118,7 @@ meta = get_meta(apikey_, pp_sg_poipoly, print_meta = T);
 ```
 <img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/97671911-a476-496e-857c-7cb42bbd9a91" width = "600">
 
-There is no partition column and minimum and maximum dates are not available. In that case, you can download the data without specifiying date ranges.
+There is no partition column and minimum and maximum dates are not available. In that case, you can download the data without specifiying date range.
  
 ```R
 files_df = get_file_list(apikey_, pp_sg_poipoly, print_info = T);
