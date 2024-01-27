@@ -70,7 +70,7 @@ Next, collect the list of files to download by
 files_df = get_file_list(apikey_, pp_advan_wp, 
                          start_date = '2023-09-03',
                          end_date = '2023-12-31',
-                         print_info = T);
+                         print_info = T)
 ```
 <br><br>
 **Be careful!! ------------------------------------------------**
@@ -79,14 +79,14 @@ files_df = get_file_list(apikey_, pp_advan_wp,
 **For example, the following `files_df1` and `files_df2` will have different file names due to different `start_date`.**
 ```r
 files_df1 = get_file_list(apikey_, pp_advan_wp, 
-                         start_date = '2023-09-03',
-                         end_date = '2023-12-31',
-                         print_info = T);
+                          start_date = '2023-09-03',
+                          end_date = '2023-12-31',
+                          print_info = T)
 
 files_df2 = get_file_list(apikey_, pp_advan_wp, 
-                         start_date = '2023-07-01',
-                         end_date = '2023-12-31',
-                         print_info = T);
+                          start_date = '2023-07-01',
+                          end_date = '2023-12-31',
+                          print_info = T)
 ```
 **This also applies to the funtion `download_files0` (demonstrated below) in the same way.**<br>
 **------------------------------------------------------------**
