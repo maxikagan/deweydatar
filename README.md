@@ -1,5 +1,5 @@
 # deweydatayr
-**_R_** API for Dewey Data Inc.
+**_R_** library for Dewey Data Inc.
 
 Find the release notes here: [Release Notes](https://github.com/Dewey-Data/deweydatar/blob/main/Release%20notes.md).
 
