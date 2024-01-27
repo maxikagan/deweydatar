@@ -76,7 +76,7 @@ files_df = get_file_list(apikey_, pp_advan_wp,
 **Be careful!! ------------------------------------------------**
 
 **For a selected date range, the download sever assigns file numbering (0, 1, 2, ...) for each file. Thus, if you have different date ranges (different `start_date` and `end_date`), file names will change due to the file numbering.**
-**For example, the following `files_df1` and `files_df2` will have different file names due to the different `start_date`.**
+**For example, the following `files_df1` and `files_df2` will have different file names due to different `start_date`.**
 ```r
 files_df1 = get_file_list(apikey_, pp_advan_wp, 
                          start_date = '2023-09-03',
