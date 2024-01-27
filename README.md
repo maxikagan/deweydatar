@@ -136,7 +136,7 @@ sample_data = read_sample0(apikey_, pp_advan_wp, nrows = 100);
 ```
 This will load the first 100 rows for the first file of Advan data.
 
-You can open a downloaded local file by
+You can open a downloaded local file (a csv.gz or csv file) by
 ```R
 sample_local = read_local("C:/Temp/Weekly_Patterns_Foot_Traffic_Full_Historical_Data-0-DATE_RANGE_START-2023-09-04.csv.gz",
                           nrows = 100)
