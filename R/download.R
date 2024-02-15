@@ -5,6 +5,11 @@ library(httr2)
 
 # make api endpoint from product ID
 make_api_endpoint = function(path) {
+  # py_update
+  # remove trailing spaces
+  path = trimws(path)
+  # py_update_
+
   if(!startsWith(path, "https://")) {
     api_endpoint = paste0("https://app.deweydata.io/external-api/v3/products/", path, "/files")
     return(api_endpoint)
@@ -107,6 +112,19 @@ get_meta = function(apikey, product_path, print_meta = TRUE) {
   return(meta)
 }
 
+# py_update
+print_selection_meta = function(selection_meta, pages_meta) {
+  message("Files information summary ---------------------------------------")
+  message(paste0("Total number of pages: ", format(selection_meta$total_pages, big.mark = ",")))
+  message(paste0("Total number of files: ", format(selection_meta$total_files, big.mark = ",")))
+  message(paste0("Total files size (MB): ", format(round(selection_meta$total_size_MB, digits = 2), big.mark = ",")))
+  message(paste0("Average single file size (MB): ",
+                 format(round(mean(pages_meta$avg_file_size_for_page), digits = 2), big.mark = ",")))
+  message(paste0("Date partition column: ", pages_meta$partition_column[1]))
+  message(paste0("Expires at: ", selection_meta$expires_at))
+  message("-----------------------------------------------------------------")
+}
+# py_update_
 
 #' @title
 #' Collects file list from server
@@ -120,6 +138,8 @@ get_meta = function(apikey, product_path, print_meta = TRUE) {
 #' Default is NULL ("1000-01-01"), which indicates no limit.
 #' @param end_date (character) Data end date character for files in the form of "2023-08-21".
 #' Default is NULL ("9999-12-31"), which indicates no limit.
+#' @param meta (data.frame) Metadata collected from \code{\link{get_meta}}.
+#' If \code{meta} is NULL, \code{\link{get_meta}} will be called.
 #' @param print_info (logical) Print file list information. Default is TRUE.
 #' @details
 #' None
@@ -145,11 +165,16 @@ get_meta = function(apikey, product_path, print_meta = TRUE) {
 get_file_list = function(apikey, product_path,
                          start_page = 1, end_page = Inf,
                          start_date = NULL, end_date = NULL,
+                         meta = NULL,
                          print_info = T) {
   product_path = make_api_endpoint(product_path)
-  meta = get_meta(apikey, product_path, print_meta = F)
-  data_meta = NULL
-  page_meta = NULL
+
+  if(is.null(meta)) {
+    meta = get_meta(apikey, product_path, print_meta = F)
+  }
+
+  selection_meta = NULL
+  pages_meta = NULL
   files_df = NULL
 
   if(is.null(start_date)) {
@@ -174,6 +199,7 @@ get_file_list = function(apikey, product_path,
       req_url_query ("page" = page)
 
     # Only datasets with partition column
+    # if("partition_column" %in% names(meta)) {
     if(!is.null(meta$partition_column)) {
       req = req %>%
       req_url_query ("partition_key_after" = start_date) %>%
@@ -197,29 +223,42 @@ get_file_list = function(apikey, product_path,
     if(is.null(response)) {
       return(NULL)
     } else if(response$status_code == 401) {
-      print(response);
+      message(response);
+      return(NULL);
+      # py_update
+    } else if(response$status_code == 422) {
+      message(response);
       return(NULL);
     }
+    # py_update_
 
     # resp_content_type(response)
     # resp_status_desc(response)
 
     res_json = resp_body_json(response)
 
+    if(is.null(res_json$page)) {
+      message("Error in resp_body_json")
+      message(res_json)
+      message(" ")
+      return(NULL)
+    }
+
     # initialize
     if(res_json$page == start_page) {
       # Convert res_json list to a data.frame
-      data_meta = data.frame(
+      selection_meta = data.frame(
         total_files = res_json$total_files,
         total_pages = res_json$total_pages,
         total_size_MB = res_json$total_size/1000000,
         expires_at = res_json$expires_at
         )
-
     }
 
-    message(paste0("Collecting files information for page ", res_json$page, "/",
-                   res_json$total_pages, "..."))
+    if(print_info == T) {
+      message(paste0("Collecting files information for page ", res_json$page, "/",
+                     res_json$total_pages, "..."))
+    }
 
     if(!is.null(res_json$partition_column)) {
       partition_column = res_json$partition_column
@@ -227,7 +266,7 @@ get_file_list = function(apikey, product_path,
       partition_column = NA
     }
 
-    page_meta = rbind(page_meta,
+    pages_meta = rbind(pages_meta,
                       data.frame(page = res_json$page,
                                  number_of_files_for_page = res_json$number_of_files_for_page,
                                  avg_file_size_for_page = res_json$avg_file_size_for_page/1000000,
@@ -253,7 +292,10 @@ get_file_list = function(apikey, product_path,
     page = res_json$page + 1
 
     if((page > res_json$total_pages) | (page > end_page)) {
-      message("Files information collection completed.")
+      if(print_info == T) {
+        message("Files information collection completed.")
+      }
+
       break
     }
   }
@@ -267,20 +309,26 @@ get_file_list = function(apikey, product_path,
 
   if(print_info == T) {
     message(" ")
-    message("Files information summary ---------------------------------------")
-    message(paste0("Total number of pages: ", format(data_meta$total_pages, big.mark = ",")))
-    message(paste0("Total number of files: ", format(data_meta$total_files, big.mark = ",")))
-    message(paste0("Total files size (MB): ", format(round(data_meta$total_size_MB, digits = 2), big.mark = ",")))
-    message(paste0("Average single file size (MB): ",
-                   format(round(mean(page_meta$avg_file_size_for_page), digits = 2), big.mark = ",")))
-    message(paste0("Date partition column: ", page_meta$partition_column[1]))
-    message(paste0("Expires at: ", data_meta$expires_at))
-    message("-----------------------------------------------------------------")
+    print_selection_meta(selection_meta, pages_meta);
+    # message("Files information summary ---------------------------------------")
+    # message(paste0("Total number of pages: ", format(selection_meta$total_pages, big.mark = ",")))
+    # message(paste0("Total number of files: ", format(selection_meta$total_files, big.mark = ",")))
+    # message(paste0("Total files size (MB): ", format(round(selection_meta$total_size_MB, digits = 2), big.mark = ",")))
+    # message(paste0("Average single file size (MB): ",
+    #                format(round(mean(pages_meta$avg_file_size_for_page), digits = 2), big.mark = ",")))
+    # message(paste0("Date partition column: ", pages_meta$partition_column[1]))
+    # message(paste0("Expires at: ", selection_meta$expires_at))
+    # message("-----------------------------------------------------------------")
     message(" ")
   }
 
   #return(list(files_df = files_df,
-  #            data_meta = data_meta, page_meta = page_meta));
+  #            selection_meta = selection_meta, pages_meta = pages_meta));
+
+  # Attache selection_meta and pages_meta to files_df as atrributes
+  attr(files_df, "selection_meta") = selection_meta
+  attr(files_df, "pages_meta") = pages_meta
+
   return(files_df)
 }
 
@@ -341,7 +389,7 @@ read_sample_data = read_sample
 #' @export
 read_sample0 = function(apikey, product_path, nrows = 100) {
   files_df = get_file_list(apikey, product_path,
-                           start_page = 1, end_page =1, print_info = F);
+                           start_page = 1, end_page = 1, print_info = F);
   message("    ");
 
   if(!is.null(files_df) & (nrow(files_df) > 0)) {
@@ -387,11 +435,15 @@ download_files = function(files_df, dest_folder,
     dest_folder = paste0(dest_folder, "/");
   }
 
+  # total_pages from files_df
+  total_pages = attr(files_df, "selection_meta")$total_pages[1]
   # number of files
   num_files = nrow(files_df);
+
   for (i in 1:num_files) {
-    message(paste0("Downloading ", i, "/", num_files,
-                   " (file index = ", files_df$index[i], ")"))
+    message(paste0("Downloading file ", i, "/", num_files, " (file index = ", files_df$index[i], ")",
+                   ", page ", files_df$page[i], "/", total_pages)
+            )
 
     file_name = paste0(filename_prefix, files_df$file_name[i]);
 
@@ -453,9 +505,84 @@ download_files0 = function(apikey, product_path, dest_folder,
                            start_page = 1, end_page = Inf,
                            start_date = start_date, end_date = end_date,
                            print_info = T);
-  message("   ");
+  # py_update
+  # message(" ");
+  message("Start downloading...")
+  message(" ")
+  # py_update_
 
-  download_files(files_df, dest_folder, filename_prefix, skip_exists);
+  if(!is.null(files_df) & (nrow(files_df) > 0)) {
+    download_files(files_df, dest_folder, filename_prefix, skip_exists);
+  } else {
+    message("No files to download.")
+  }
+
+  # py_update
+  message(" ")
+  message("Download completed.");
+  # py_update_
+}
+
+#' @title
+#' Download files with API key and product path to a destination folder
+#' @description
+#' Download files with API key and product path to a destination folder.
+#' @param apikey (character) API Key.
+#' @param product_path (character) API endpoint or Product ID.
+#' @param dest_folder (character) Destination local folder to save files.
+#' @param start_date (character) Data start date character for files in the form of "2021-07-01".
+#' Default is NULL ("1000-01-01"), which indicates no limit.
+#' @param end_date (character) Data end date character for files in the form of "2023-08-21".
+#' Default is NULL ("9999-12-31"), which indicates no limit.
+#' @param filename_prefix (character) Prefix for file names.
+#' @param skip_exists (boolean) Skips downloading if the file exists. Default is FALSE.
+#' @details
+#' The file links inside this function are valid for 24 hours.
+#' If download process passes the 24 hours period,
+#' this function must be called again with \code{skip_exists = TRUE} option.
+#' @return None.
+#' @author Dewey Data Inc.
+#' @references
+#' None
+#' @seealso
+#' \code{\link{download_files}}, \code{\link{download_files0}}
+#' @examples
+#' # not run
+#' download_files1(apikey_, product_path, "C:/temp")
+#'
+#' @export
+download_files1 = function(apikey, product_path, dest_folder,
+                           start_date = NULL, end_date = NULL,
+                           filename_prefix = NULL, skip_exists = FALSE) {
+  # Get meta data
+  meta = get_meta(apikey, product_path, print_meta = F)
+
+  # Call get_file_list with meta for the first page to see the total_pages
+  p1_files_df = get_file_list(apikey = apikey, product_path = product_path,
+                           start_page = 1, end_page = 1,
+                           start_date = start_date, end_date = end_date,
+                           meta = meta,
+                           print_info = F);
+  print_selection_meta(attr(p1_files_df, "selection_meta"), attr(p1_files_df, "pages_meta"))
+
+  selection_meta = attr(p1_files_df, "selection_meta")
+
+  message(" ");
+  message("Start downloading...")
+  for(i in 1:selection_meta$total_pages[1]) {
+    message(" ")
+    message(paste0("Downloading page ", i, "/", selection_meta$total_pages[1], "..."))
+
+    files_df = get_file_list(apikey = apikey, product_path = product_path,
+                             start_page = i, end_page = i,
+                             start_date = start_date, end_date = end_date,
+                             meta = meta,
+                             print_info = F);
+
+    download_files(files_df, dest_folder, filename_prefix, skip_exists);
+  }
+  message(" ")
+  message("Download completed.");
 }
 
 #' @title

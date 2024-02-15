@@ -11,6 +11,7 @@ get_file_list(
   end_page = Inf,
   start_date = NULL,
   end_date = NULL,
+  meta = NULL,
   print_info = T
 )
 }
@@ -28,6 +29,9 @@ Default is NULL ("1000-01-01"), which indicates no limit.}
 
 \item{end_date}{(character) Data end date character for files in the form of "2023-08-21".
 Default is NULL ("9999-12-31"), which indicates no limit.}
+
+\item{meta}{(data.frame) Metadata collected from \code{\link{get_meta}}.
+If \code{meta} is NULL, \code{\link{get_meta}} will be called.}
 
 \item{print_info}{(logical) Print file list information. Default is TRUE.}
 }

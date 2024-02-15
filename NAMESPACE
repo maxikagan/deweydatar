@@ -2,6 +2,7 @@
 
 export(download_files)
 export(download_files0)
+export(download_files1)
 export(expand_cat_json)
 export(expand_integer_json)
 export(get_file_list)

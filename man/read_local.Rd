@@ -9,7 +9,7 @@ read_local(path, nrows = -1)
 \arguments{
 \item{nrows}{(integer) Number of rows to read. Default is -1 (all).}
 
-\item{apikey}{(character) Path to a .csv.gz file.}
+\item{apikey}{(character) Path to a .csv.gz or csv file.}
 }
 \value{
 A data.frame object contains data.
