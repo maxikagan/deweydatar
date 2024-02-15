@@ -41,6 +41,7 @@ Download files with API key and product path to a destination folder.
 The file links inside this function are valid for 24 hours.
 If download process passes the 24 hours period,
 this function must be called again with \code{skip_exists = TRUE} option.
+When file download will take over 24 hours, use \code{\link{download_files1}}.
 }
 \examples{
 # not run
@@ -51,7 +52,7 @@ download_files0(apikey_, product_path, "C:/temp")
 None
 }
 \seealso{
-\code{\link{download_files}}
+\code{\link{download_files}}, \code{\link{download_files1}}
 }
 \author{
 Dewey Data Inc.

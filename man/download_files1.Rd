@@ -38,9 +38,7 @@ None.
 Download files with API key and product path to a destination folder.
 }
 \details{
-The file links inside this function are valid for 24 hours.
-If download process passes the 24 hours period,
-this function must be called again with \code{skip_exists = TRUE} option.
+None.
 }
 \examples{
 # not run

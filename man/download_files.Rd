@@ -43,7 +43,7 @@ download_files(files_df, "C:/temp", "advan_wp_", skip_exists = FALSE)
 None
 }
 \seealso{
-\code{\link{download_files0}}
+\code{\link{download_files0}}, \code{\link{download_files1}}
 }
 \author{
 Dewey Data Inc.

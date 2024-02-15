@@ -421,7 +421,7 @@ read_sample_data0 = read_sample0
 #' @references
 #' None
 #' @seealso
-#' \code{\link{download_files0}}
+#' \code{\link{download_files0}}, \code{\link{download_files1}}
 #' @examples
 #' # not run
 #' download_files(files_df, "C:/temp", "advan_wp_", skip_exists = FALSE)
@@ -486,12 +486,13 @@ download_files = function(files_df, dest_folder,
 #' The file links inside this function are valid for 24 hours.
 #' If download process passes the 24 hours period,
 #' this function must be called again with \code{skip_exists = TRUE} option.
+#' When file download will take over 24 hours, use \code{\link{download_files1}}.
 #' @return None.
 #' @author Dewey Data Inc.
 #' @references
 #' None
 #' @seealso
-#' \code{\link{download_files}}
+#' \code{\link{download_files}}, \code{\link{download_files1}}
 #' @examples
 #' # not run
 #' download_files0(apikey_, product_path, "C:/temp")
@@ -536,10 +537,7 @@ download_files0 = function(apikey, product_path, dest_folder,
 #' Default is NULL ("9999-12-31"), which indicates no limit.
 #' @param filename_prefix (character) Prefix for file names.
 #' @param skip_exists (boolean) Skips downloading if the file exists. Default is FALSE.
-#' @details
-#' The file links inside this function are valid for 24 hours.
-#' If download process passes the 24 hours period,
-#' this function must be called again with \code{skip_exists = TRUE} option.
+#' @details None.
 #' @return None.
 #' @author Dewey Data Inc.
 #' @references
