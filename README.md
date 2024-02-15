@@ -1,3 +1,6 @@
+**Please read this carefully as the download approach has been changed slightly.**
+
+
 # deweydatayr
 **_R_** library for Dewey Data Inc.
 
@@ -7,7 +10,10 @@ Bug report: https://community.deweydata.io/c/help/r/44.
 
 Explore data at https://www.deweydata.io/.
 
-# API tutorial
+Underlying Amplify API tutorial: https://github.com/amplifydata/amplifydata-public/blob/main/README.md
+
+# Library tutorial
+
 ### 1. Create API Key
 In the system, click Connections → Add Connection to create your API key.
 
