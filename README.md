@@ -175,6 +175,6 @@ You can open a downloaded local file (a csv.gz or csv file) by
 sample_local = read_local("C:/Temp/Weekly_Patterns_Foot_Traffic_Full_Historical_Data-0-DATE_RANGE_START-2023-09-04.csv.gz",
                           nrows = 100)
 ```
-Files are large to read from local disk and **_R_**’s base read.csv can be slow. I recommend using `fread` function in the `data.table` package.
+`read_sample` and `read_sample0` use **_R_**’s base `read.csv` fuction. Dewey's files can be large to read from local disk and `read.csv` can be slow. We recommend using `fread` function in the `data.table` package.
 
 Thanks
