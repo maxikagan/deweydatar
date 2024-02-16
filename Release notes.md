@@ -7,3 +7,6 @@
   - Get download link (`files_df`) for specific date range
   - Download files
 - `skip_exists` default is `FALSE`
+
+## 0.2.1
+- Added function `download_files1`
