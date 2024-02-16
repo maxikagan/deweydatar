@@ -25,6 +25,7 @@ As the message says, please make a copy of your API key and store it somewhere. 
 
 ### 2. Get a product path
 Choose your product and Get / Subscribe → Connect to API then you can get API endpoint (product path). Make a copy of it.
+
 <img src="https://github.com/Dewey-Data/deweydatar/assets/142400584/aef19ae4-eccd-4b58-a7f7-77ed698e0584" width="600">
 
 ### 3. Install `deweydatar` library
@@ -94,7 +95,7 @@ files_df2 = get_file_list(apikey_, pp_advan_wp,
                           end_date = '2023-12-31',
                           print_info = T)
 ```
-**This also applies to the funtion `download_files0` (demonstrated below) in the same way.**<br>
+**This also applies to the funtion `download_files0` and `download_files1` (demonstrated below) in the same way.**<br>
 **------------------------------------------------------------**
 <br><br>
 
