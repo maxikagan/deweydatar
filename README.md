@@ -45,6 +45,7 @@ library(deweydatar)
 * `get_file_list`: gets the list of files in a `data.frame`
 * `download_files`: download files from the file list to a destination folder
 * `download_files0`: download files with apikey and product path to a destination folder
+* `download_files1`: download files with apikey and product path to a destination folder (see below Examples for the difference between `download_files0` and `download_files1`)
 * `read_sample`: read a sample of data for a file download URL
 * `read_sample0`: read a sample of data for the first file with apikey and product path
 * `read_local`: read data from locally saved csv.gz file
@@ -175,6 +176,5 @@ You can open a downloaded local file (a csv.gz or csv file) by
 sample_local = read_local("C:/Temp/Weekly_Patterns_Foot_Traffic_Full_Historical_Data-0-DATE_RANGE_START-2023-09-04.csv.gz",
                           nrows = 100)
 ```
-`read_sample` and `read_sample0` use **_R_**’s base `read.csv` fuction. Dewey's files can be large to read from local disk and `read.csv` can be slow. We recommend using `fread` function in the `data.table` package.
-
+`read_local` function uses **_R_**’s base `read.csv` function. Files are large to read from local disk and `read.csv` can be slow. I recommend using `fread` function in the `data.table` package.
 Thanks
