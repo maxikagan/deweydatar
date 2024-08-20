@@ -428,7 +428,8 @@ read_sample_data0 = read_sample0
 #'
 #' @export
 download_files = function(files_df, dest_folder,
-                          filename_prefix = NULL, skip_exists = FALSE) {
+                          filename_prefix = NULL, skip_exists = FALSE,
+                         sleep_time = 1) {
   dest_folder = gsub("\\", "/", dest_folder, fixed = T);
 
   if(!endsWith(dest_folder, "/")) {
@@ -466,6 +467,8 @@ download_files = function(files_df, dest_folder,
     close(file_con)
 
     message("   ")
+
+    Sys.sleep(sleep_time)
   }
 }
 
@@ -500,7 +503,8 @@ download_files = function(files_df, dest_folder,
 #' @export
 download_files0 = function(apikey, product_path, dest_folder,
                            start_date = NULL, end_date = NULL,
-                           filename_prefix = NULL, skip_exists = FALSE) {
+                           filename_prefix = NULL, skip_exists = FALSE,
+                          sleep_time = 1) {
   #files_df = get_file_list(apikey, product_path, print_info = T);
   files_df = get_file_list(apikey = apikey, product_path = product_path,
                            start_page = 1, end_page = Inf,
@@ -513,7 +517,7 @@ download_files0 = function(apikey, product_path, dest_folder,
   # py_update_
 
   if(!is.null(files_df) & (nrow(files_df) > 0)) {
-    download_files(files_df, dest_folder, filename_prefix, skip_exists);
+    download_files(files_df, dest_folder, filename_prefix, skip_exists, sleep_time);
   } else {
     message("No files to download.")
   }
@@ -551,7 +555,8 @@ download_files0 = function(apikey, product_path, dest_folder,
 #' @export
 download_files1 = function(apikey, product_path, dest_folder,
                            start_date = NULL, end_date = NULL,
-                           filename_prefix = NULL, skip_exists = FALSE) {
+                           filename_prefix = NULL, skip_exists = FALSE,
+                          sleep_time = 1) {
   # Get meta data
   meta = get_meta(apikey, product_path, print_meta = F)
 
@@ -577,7 +582,7 @@ download_files1 = function(apikey, product_path, dest_folder,
                              meta = meta,
                              print_info = F);
 
-    download_files(files_df, dest_folder, filename_prefix, skip_exists);
+    download_files(files_df, dest_folder, filename_prefix, skip_exists, sleep_time);
   }
   message(" ")
   message("Download completed.");
