@@ -459,7 +459,7 @@ download_files = function(files_df, dest_folder,
     message(paste0("Writing ", dest_path))
     message("Please be patient. It may take a while...")
 
-    req = request(files_df$link[i])
+    req = request(files_df$link[i]) %>% req_retry(max_tries=10) 
     response = req_perform(req)
 
     file_con = file(dest_path, "wb")
